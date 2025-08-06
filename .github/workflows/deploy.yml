@@ -8,9 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: infra
 
     steps:
       - name: Checkout repo
@@ -23,7 +20,6 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
-        working-directory: infra
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
