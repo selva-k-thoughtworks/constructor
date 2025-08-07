@@ -23,6 +23,14 @@ def parse_apply_output():
         resource_pattern = r'(\w+\.\w+\["[^"]*"\]):\s*(Creating|Creation complete|Updating|Update complete|Destroying|Destruction complete|Refreshing state)'
         matches = re.findall(resource_pattern, apply_output)
         
+        # Clean up matches to remove timing prefixes like "1m"
+        cleaned_matches = []
+        for resource, action in matches:
+            # Remove timing prefixes (like "1m", "2s", etc.) from the action
+            cleaned_action = re.sub(r'^\d+[msh]\s*', '', action)
+            cleaned_matches.append((resource, cleaned_action))
+        matches = cleaned_matches
+        
         changes = Counter()
         resource_details = []
         
