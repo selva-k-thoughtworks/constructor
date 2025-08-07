@@ -25,7 +25,7 @@ jobs:
           path: caller_repo
 
       - name: Write config.yaml from input
-        run: echo "${{ inputs.config_yaml }}" > caller_repo/config.yaml
+        run: echo "${{ inputs.config_yaml }} | base64 --decode" > caller_repo/config.yaml
 
       - name: List files in workspace
         run: ls -l
