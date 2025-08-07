@@ -3,6 +3,10 @@ import re
 from collections import Counter
 from datetime import datetime
 
+def clean_type(res_type):
+    """Remove '1m' or other prefixes from resource type"""
+    return re.sub(r'^\d*m', '', res_type)
+
 def parse_apply_output():
     """Parse terraform apply output to extract resource changes"""
     try:
@@ -29,7 +33,8 @@ def parse_apply_output():
         for resource, action in matches:
             match = re.match(r'([a-zA-Z_][\w]*)\.([a-zA-Z_][\w]*)\["([^"]*)"\]', resource)
             if match:
-                res_type = match.group(1)
+                raw_type = match.group(1)
+                res_type = clean_type(raw_type)
                 res_name = match.group(2)
                 res_key = match.group(3)
                 
@@ -103,7 +108,7 @@ def main():
     if current_resources:
         print(f"\n### Current Infrastructure State:")
         print(f"Total resources deployed: {len(current_resources)}")
-        by_type = Counter([r["type"] for r in current_resources])
+        by_type = Counter([clean_type(r["type"]) for r in current_resources])
         for res_type, count in sorted(by_type.items()):
             print(f"• {res_type}: {count} resource(s)")
 
