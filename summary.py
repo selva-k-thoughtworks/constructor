@@ -114,15 +114,17 @@ def main():
     changes, resource_details = parse_apply_output()
     
     if changes:
-        actions_map = {
-            ("create",): "✅ Created",
-            ("update",): "🛠 Updated", 
-            ("delete",): "🗑 Deleted",
-        }
-        
         print("\n### Resource Changes:")
         for (actions, res_type), count in sorted(changes.items()):
-            label = actions_map.get(actions, "/".join(actions))
+            # Fix the actions mapping to handle the tuple properly
+            if actions == ("create",):
+                label = "✅ Created"
+            elif actions == ("update",):
+                label = "🛠 Updated"
+            elif actions == ("delete",):
+                label = "🗑 Deleted"
+            else:
+                label = "/".join(actions)
             print(f"{label}: {count} {res_type}(s)")
         
         print("\n### Detailed Resource Information:")
