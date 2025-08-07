@@ -38,40 +38,42 @@ def parse_apply_output():
             resource_details = []
             
             for resource, action in matches:
-                # Extract resource type and name
-                parts = resource.split('.')
-                res_type = parts[0]
-                res_name = parts[1].split('[')[0]
-                res_key = re.search(r'\["([^"]*)"\]', resource).group(1)
-                
-                if "complete" in action.lower():
-                    if "creation" in action.lower():
-                        changes[("create", res_type)] += 1
-                        resource_details.append({
-                            'type': res_type,
-                            'name': res_name,
-                            'key': res_key,
-                            'action': 'created',
-                            'full_name': resource
-                        })
-                    elif "update" in action.lower():
-                        changes[("update", res_type)] += 1
-                        resource_details.append({
-                            'type': res_type,
-                            'name': res_name,
-                            'key': res_key,
-                            'action': 'updated',
-                            'full_name': resource
-                        })
-                    elif "destruction" in action.lower():
-                        changes[("delete", res_type)] += 1
-                        resource_details.append({
-                            'type': res_type,
-                            'name': res_name,
-                            'key': res_key,
-                            'action': 'deleted',
-                            'full_name': resource
-                        })
+                # Extract resource type and name properly
+                # Example: aws_s3_bucket.buckets["logs"] -> type: aws_s3_bucket, name: buckets, key: logs
+                match = re.match(r'(\w+)\.(\w+)\["([^"]*)"\]', resource)
+                if match:
+                    res_type = match.group(1)  # aws_s3_bucket
+                    res_name = match.group(2)  # buckets
+                    res_key = match.group(3)   # logs
+                    
+                    if "complete" in action.lower():
+                        if "creation" in action.lower():
+                            changes[("create", res_type)] += 1
+                            resource_details.append({
+                                'type': res_type,
+                                'name': res_name,
+                                'key': res_key,
+                                'action': 'created',
+                                'full_name': resource
+                            })
+                        elif "update" in action.lower():
+                            changes[("update", res_type)] += 1
+                            resource_details.append({
+                                'type': res_type,
+                                'name': res_name,
+                                'key': res_key,
+                                'action': 'updated',
+                                'full_name': resource
+                            })
+                        elif "destruction" in action.lower():
+                            changes[("delete", res_type)] += 1
+                            resource_details.append({
+                                'type': res_type,
+                                'name': res_name,
+                                'key': res_key,
+                                'action': 'deleted',
+                                'full_name': resource
+                            })
                 elif "refreshing state" in action.lower():
                     # This is just a refresh, not a change
                     pass
