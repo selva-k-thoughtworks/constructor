@@ -116,6 +116,9 @@ def main():
     if changes:
         print("\n### Resource Changes:")
         for (actions, res_type), count in sorted(changes.items()):
+            # Debug: Print what we're working with
+            print(f"Debug: actions={actions}, type={type(actions)}, res_type={res_type}, count={count}")
+            
             # Fix the actions mapping to handle the tuple properly
             if actions == ("create",):
                 label = "✅ Created"
