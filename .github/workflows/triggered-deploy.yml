@@ -6,10 +6,16 @@ on:
       config_yaml:
         required: true
         type: string
+    outputs:
+      result:
+        description: "Final config applied"
+        value: ${{ jobs.deploy.outputs.result }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.config.outcome }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -40,6 +46,10 @@ jobs:
 
       - name: Validate Config and generate with defaults
         run: python3 validate_config.py
+
+      - name: Fianl version of config.yaml
+        run: cat config.yaml
+        id: config
 
       - name: Generate tfvars from YAML
         run: python3 generate_tfvars.py
