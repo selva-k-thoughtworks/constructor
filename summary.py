@@ -37,7 +37,7 @@ def parse_apply_output():
         for resource, action in matches:
             match = re.match(r'(\w+)\.(\w+)\["([^"]*)"\]', resource)
             if match:
-                res_type = match.group(1)
+                res_type = match.group(1).replace("1m", "")
                 res_name = match.group(2)
                 res_key = match.group(3)
                 
