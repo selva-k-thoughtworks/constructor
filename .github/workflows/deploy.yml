@@ -35,6 +35,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Generate tfvars from YAML
+        run: python3 validate_config.py
+
+      - name: Generate tfvars from YAML
         run: python3 generate_tfvars.py
 
       - name: Terraform Init
