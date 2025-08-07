@@ -57,7 +57,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -var-file=terraform.tfvars.json
+        run: terraform apply -auto-approve -var-file=terraform.tfvars.json | tee apply-output.txt
 
       - name: Export Terraform state to JSON
         if: github.ref == 'refs/heads/main'
