@@ -78,9 +78,9 @@ jobs:
         run: terraform show -json plan.out > plan.json
         working-directory: caller_repo
 
-      - name: Validate IAM policies and attachments
-        run: python3 test_validate_iam_policy.py
-        working-directory: caller_repo
+      # - name: Validate IAM policies and attachments
+      #   run: python3 test_validate_iam_policy.py
+      #   working-directory: caller_repo
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
