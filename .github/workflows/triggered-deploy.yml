@@ -1,0 +1,61 @@
+name: Triggered Deploy
+
+on:
+  workflow_call:
+    inputs:
+      config_yaml:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Write config.yaml from input
+        run: echo "${{ inputs.config_yaml }}" > config.yaml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Validate Config and generate with defaults
+        run: python3 validate_config.py
+
+      - name: Generate tfvars from YAML
+        run: python3 generate_tfvars.py
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=plan.out -var-file=terraform.tfvars.json
+
+      - name: Export Terraform plan to JSON
+        run: terraform show -json plan.out > plan.json
+
+      - name: Validate IAM policies and attachments
+        run: python3 test_validate_iam_policy.py
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve -var-file=terraform.tfvars.json
