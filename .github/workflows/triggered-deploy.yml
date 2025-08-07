@@ -19,9 +19,14 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Write config.yaml from input
         run: echo "${{ inputs.config_yaml }}" > config.yaml
+
+      - name: List files in workspace
+        run: ls -l
 
       - name: Set up Python
         uses: actions/setup-python@v5
