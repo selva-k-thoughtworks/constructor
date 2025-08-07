@@ -1,3 +1,5 @@
 .terraform
 terraform.tfvars.json
 __pycache__/
+plan.json
+plan.out
