@@ -44,7 +44,7 @@ jobs:
         run: python3 generate_tfvars.py
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="key=infra/terraform.tfstate"
 
       - name: Terraform Plan
         run: terraform plan -out=plan.out -var-file=terraform.tfvars.json

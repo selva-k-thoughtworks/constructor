@@ -5,7 +5,6 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "selva-terraform-state-bucket"
-    key    = "infra/terraform.tfstate"
     region = "eu-west-1"
   }
 }

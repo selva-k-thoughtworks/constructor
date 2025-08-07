@@ -66,8 +66,15 @@ jobs:
         run: python3 generate_tfvars.py
         working-directory: caller_repo
 
+      - name: Extract project name from config.yaml
+        id: project
+        run: |
+          PROJECT=$(python3 -c "import yaml; print(yaml.safe_load(open('config.yaml'))['project'])")
+          echo "project=$PROJECT" >> $GITHUB_OUTPUT
+        working-directory: caller_repo
+
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="key=infra/${{ steps.project.outputs.project }}/terraform.tfstate"
         working-directory: caller_repo
 
       - name: Terraform Plan
