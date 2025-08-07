@@ -20,14 +20,14 @@ def parse_apply_output():
             destroyed = int(summary_match.group(3))
 
         # Parse detailed changes
-        resource_pattern = r'([a-zA-Z_][\w]*)\.([a-zA-Z_][\w]*)\["([^"]*):\s*(Creating|Creation complete|Updating|Update complete|Destroying|Destruction complete|Refreshing state)'
+        resource_pattern = r'(\w+\.\w+\["[^"]*"\]):\s*(Creating|Creation complete|Updating|Update complete|Destroying|Destruction complete|Refreshing state)'
         matches = re.findall(resource_pattern, apply_output)
         
         changes = Counter()
         resource_details = []
         
         for resource, action in matches:
-            match = re.match(r'(\w+)\.(\w+)\["([^"]*)"\]', resource)
+            match = re.match(r'([a-zA-Z_][\w]*)\.([a-zA-Z_][\w]*)\["([^"]*)"\]', resource)
             if match:
                 res_type = match.group(1)
                 res_name = match.group(2)
