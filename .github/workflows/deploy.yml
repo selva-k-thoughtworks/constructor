@@ -40,7 +40,7 @@ jobs:
           python3 validate_config.py > validate-output.txt 2>&1
         continue-on-error: true
       
-      - name: Add Summary to GitHub Step Summary
+      - name: Add Config Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
         run: |
           if grep -q "Validation failed" validate-output.txt; then
@@ -83,7 +83,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: python3 summary.py | tee summary-output.txt
 
-      - name: Add Summary to GitHub Step Summary
+      - name: Add Infra Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
         run: |
           echo '## 🚀 Infrastructure Deployment Summary' >> $GITHUB_STEP_SUMMARY

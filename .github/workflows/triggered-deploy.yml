@@ -60,7 +60,7 @@ jobs:
         continue-on-error: true
         working-directory: caller_repo
       
-      - name: Add Summary to GitHub Step Summary
+      - name: Add Config Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
         run: |
           if grep -q "Validation failed" validate-output.txt; then
@@ -120,7 +120,7 @@ jobs:
         run: python3 summary.py | tee summary-output.txt
         working-directory: caller_repo
 
-      - name: Add Summary to GitHub Step Summary
+      - name: Add Infra Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
         run: |
           echo '## 🚀 Infrastructure Deployment Summary' >> $GITHUB_STEP_SUMMARY
