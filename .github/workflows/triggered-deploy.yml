@@ -55,12 +55,14 @@ jobs:
 
       - name: Validate Config and generate with defaults
         id: validate_config
-        run: python3 validate_config.py 2>&1 | tee validate-output.txt
+        run: |
+          python3 validate_config.py 2>&1 | tee validate-output.txt
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
         working-directory: caller_repo
         continue-on-error: true
 
       - name: Add Validation Results to Step Summary
-        if: steps.validate_config.outcome == 'failure'
+        if: steps.validate_config.outputs.exit_code != '0'
         run: |
           echo '## ❌ Config Validation Failed' >> $GITHUB_STEP_SUMMARY
           echo '' >> $GITHUB_STEP_SUMMARY
@@ -73,7 +75,7 @@ jobs:
         working-directory: caller_repo
 
       - name: Fail if validation failed
-        if: steps.validate_config.outcome == 'failure'
+        if: steps.validate_config.outputs.exit_code != '0'
         run: exit 1
 
       - name: Fianl version of config.yaml
