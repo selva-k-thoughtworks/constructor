@@ -4,7 +4,3 @@ buckets:
   iam_role_name: writer-role-logs
   write_prefix: FOOBAR/logs/
   prefix: selva-logs
-- name: data
-  prefix: selva-data
-  iam_role_name: writer-role-data
-  write_prefix: FOOBAR/data/
