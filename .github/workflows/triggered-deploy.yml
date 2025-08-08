@@ -54,12 +54,30 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Validate Config and generate with defaults
-        run: python3 validate_config.py
+        id: validate_config
+        run: python3 validate_config.py 2>&1 | tee validate-output.txt
         working-directory: caller_repo
+        continue-on-error: true
+
+      - name: Add Validation Results to Step Summary
+        if: steps.validate_config.outcome == 'failure'
+        run: |
+          echo '## ❌ Config Validation Failed' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '### Validation Output:' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat validate-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo 'Please fix the configuration issues above and try again.' >> $GITHUB_STEP_SUMMARY
+        working-directory: caller_repo
+
+      - name: Fail if validation failed
+        if: steps.validate_config.outcome == 'failure'
+        run: exit 1
 
       - name: Fianl version of config.yaml
         run: cat config.yaml
-
         working-directory: caller_repo
 
       - name: Generate tfvars from YAML
