@@ -38,7 +38,7 @@ jobs:
         id: validate_config
         run: |
           python3 validate_config.py > validate-output.txt 2>&1
-        continue_on_error: true
+        continue-on-error: true
       
       - name: Add Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
