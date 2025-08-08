@@ -60,13 +60,26 @@ jobs:
         working-directory: caller_repo
         continue-on-error: true
       
+      - name: Validate Config and generate with defaults
+        id: validate_config
+        run: |
+          python3 validate_config.py > validate-output.txt 2>&1
+        continue-on-error: true
+        working-directory: caller_repo
+      
       - name: Add Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
         run: |
-          echo '## 🚀 Config Validation Summary' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          cat validate-output.txt >> $GITHUB_STEP_SUMMARY
-          exit 1
+          if grep -q "Validation failed" validate-output.txt; then
+            echo '## 🚀 Config Validation Summary' >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
+            echo "❌ Validation failed detected. Exiting..." >> $GITHUB_STEP_SUMMARY
+            cat validate-output.txt >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ No validation failures found."
+          fi
+        working-directory: caller_repo
 
       - name: Fianl version of config.yaml
         run: cat config.yaml

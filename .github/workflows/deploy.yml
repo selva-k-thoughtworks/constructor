@@ -43,9 +43,9 @@ jobs:
       - name: Add Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
         run: |
-          echo '## 🚀 Config Validation Summary' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
           if grep -q "Validation failed" validate-output.txt; then
+            echo '## 🚀 Config Validation Summary' >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
             echo "❌ Validation failed detected. Exiting..." >> $GITHUB_STEP_SUMMARY
             cat validate-output.txt >> $GITHUB_STEP_SUMMARY
             exit 1
