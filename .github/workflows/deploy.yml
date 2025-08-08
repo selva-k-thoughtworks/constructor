@@ -45,8 +45,13 @@ jobs:
         run: |
           echo '## 🚀 Config Validation Summary' >> $GITHUB_STEP_SUMMARY
           echo '' >> $GITHUB_STEP_SUMMARY
-          cat validate-output.txt >> $GITHUB_STEP_SUMMARY
-          exit 1
+          if grep -q "Validation failed" validate-output.txt; then
+            echo "❌ Validation failed detected. Exiting..." >> $GITHUB_STEP_SUMMARY
+            cat validate-output.txt >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ No validation failures found."
+          fi
 
       - name: Fianl version of config.yaml
         run: cat config.yaml
