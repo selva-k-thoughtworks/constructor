@@ -52,13 +52,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Validate Config and generate with defaults
-        id: validate_config
-        run: |
-          python3 validate_config.py > validate-output.txt 2>&1
-        working-directory: caller_repo
-        continue-on-error: true
       
       - name: Validate Config and generate with defaults
         id: validate_config
