@@ -82,10 +82,13 @@ jobs:
       - name: Generate Deployment Summary
         if: github.ref == 'refs/heads/main'
         run: python3 summary.py | tee summary-output.txt
-
-      - name: Add Infra Summary to GitHub Step Summary
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo '## 🚀 Infrastructure Deployment Summary' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          cat summary-output.txt >> $GITHUB_STEP_SUMMARY
+      
+      # Note: The summary.py script already writes to GitHub Step Summary
+      # No need to duplicate the output here
+      
+      # - name: Add Infra Summary to GitHub Step Summary
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #     echo '## 🚀 Infrastructure Deployment Summary' >> $GITHUB_STEP_SUMMARY
+      #     echo '' >> $GITHUB_STEP_SUMMARY
+      #     cat summary-output.txt >> $GITHUB_STEP_SUMMARY
