@@ -35,7 +35,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Validate Config and generate with defaults
-        run: python3 validate_config.py
         id: validate_config
         run: python3 validate_config.py 2>&1 | tee validate-output.txt
         working-directory: caller_repo
