@@ -66,6 +66,3 @@ jobs:
       - name: Generate Deployment Summary
         if: github.ref == 'refs/heads/main'
         run: python3 summary.py
-
-      - name: Adding markdown
-        run: echo '### Hello world! 🚀' >> $GITHUB_STEP_SUMMARY

@@ -1,5 +1,6 @@
 import json
 import re
+import os
 from collections import Counter
 from datetime import datetime
 
@@ -82,50 +83,71 @@ def get_config_info():
         return {}
 
 def main():
-    print("📊 Deployment Summary (Applied Changes):")
-    print("=" * 50)
+    # Check if we're running in GitHub Actions
+    github_step_summary = os.environ.get('GITHUB_STEP_SUMMARY')
+    
+    output_lines = []
+    
+    output_lines.append("📊 Deployment Summary (Applied Changes):")
+    output_lines.append("=" * 50)
 
     added, changed, destroyed, changes, resource_details = parse_apply_output()
     
-    print("### Apply Summary:")
-    print(f"✅ Resources added: {added}")
-    print(f"🛠 Resources changed: {changed}")
-    print(f"🗑 Resources destroyed: {destroyed}")
+    output_lines.append("### Apply Summary:")
+    output_lines.append(f"✅ Resources added: {added}")
+    output_lines.append(f"🛠 Resources changed: {changed}")
+    output_lines.append(f"🗑 Resources destroyed: {destroyed}")
 
     if not changes and not resource_details:
-        print("\n### Status: Infrastructure is up to date!")
+        output_lines.append("\n### Status: Infrastructure is up to date!")
+        # Still print to console and write to summary
+        print("\n".join(output_lines))
+        if github_step_summary:
+            with open(github_step_summary, 'a') as f:
+                f.write("## 🚀 Infrastructure Deployment Summary\n\n")
+                f.write("\n".join(output_lines))
         return
 
-    print("\n### Resource Changes:")
+    output_lines.append("\n### Resource Changes:")
     for (action, res_type), count in sorted(changes.items()):
         icon = "✅" if action == "create" else "🛠" if action == "update" else "🗑"
-        print(f"{icon} {action.title()}: {count} {res_type}(s)")
+        output_lines.append(f"{icon} {action.title()}: {count} {res_type}(s)")
 
-    print("\n### Detailed Resource Information:")
+    output_lines.append("\n### Detailed Resource Information:")
     for res in resource_details:
-        print(f"• {res['action'].title()}: {res['type']} '{res['name']}' (key: {res['key']})")
+        output_lines.append(f"• {res['action'].title()}: {res['type']} '{res['name']}' (key: {res['key']})")
 
-    print("\n" + "=" * 50)
+    output_lines.append("\n" + "=" * 50)
 
     current_resources = get_current_state()
     if current_resources:
-        print(f"\n### Current Infrastructure State:")
-        print(f"Total resources deployed: {len(current_resources)}")
+        output_lines.append(f"\n### Current Infrastructure State:")
+        output_lines.append(f"Total resources deployed: {len(current_resources)}")
         by_type = Counter([r["type"] for r in current_resources])
         for res_type, count in sorted(by_type.items()):
-            print(f"• {res_type}: {count} resource(s)")
+            output_lines.append(f"• {res_type}: {count} resource(s)")
 
     config = get_config_info()
     if config:
-        print(f"\n### Configuration:")
-        print(f"Project: {config.get('project', 'N/A')}")
+        output_lines.append(f"\n### Configuration:")
+        output_lines.append(f"Project: {config.get('project', 'N/A')}")
         if config.get("buckets"):
-            print(f"Buckets configured: {len(config['buckets'])}")
+            output_lines.append(f"Buckets configured: {len(config['buckets'])}")
             for bucket in config["buckets"]:
-                print(f"  • {bucket['name']} (prefix: {bucket['prefix']})")
+                output_lines.append(f"  • {bucket['name']} (prefix: {bucket['prefix']})")
 
-    print(f"\n### Deployment Timestamp:")
-    print(f"Completed at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    output_lines.append(f"\n### Deployment Timestamp:")
+    output_lines.append(f"Completed at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+
+    # Print to console
+    print("\n".join(output_lines))
+    
+    # Write to GitHub Step Summary if available
+    if github_step_summary:
+        with open(github_step_summary, 'a') as f:
+            f.write("## 🚀 Infrastructure Deployment Summary\n\n")
+            f.write("\n".join(output_lines))
+            f.write("\n")
 
 if __name__ == "__main__":
     main()
