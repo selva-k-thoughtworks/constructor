@@ -4,6 +4,11 @@ import os
 from collections import Counter
 from datetime import datetime
 
+RESOURCE_FRIENDLY_NAME = {
+    'aws_s3_bucket': 'S3 bucket',
+    'aws_iam_role': 'IAM role',
+}
+
 def parse_apply_output():
     """Parse terraform apply output to extract resource changes"""
     try:
@@ -93,10 +98,10 @@ def main():
 
     added, changed, destroyed, changes, resource_details = parse_apply_output()
     
-    output_lines.append("### Apply Summary:")
-    output_lines.append(f"✅ Resources added: {added}")
-    output_lines.append(f"🛠 Resources changed: {changed}")
-    output_lines.append(f"🗑 Resources destroyed: {destroyed}")
+    # output_lines.append("### Apply Summary:")
+    # output_lines.append(f"✅ Resources added: {added}")
+    # output_lines.append(f"🛠 Resources changed: {changed}")
+    # output_lines.append(f"🗑 Resources destroyed: {destroyed}")
 
     if not changes and not resource_details:
         output_lines.append("\n### Status: Infrastructure is up to date!")
@@ -114,7 +119,8 @@ def main():
     filtered_changes = {k: v for k, v in changes.items() if k[1] in allowed_resources}
     for (action, res_type), count in sorted(filtered_changes.items()):
         icon = "✅" if action == "create" else "🛠" if action == "update" else "🗑"
-        output_lines.append(f"{icon} {action.title()}: {count} {res_type}(s)")
+        display_type = RESOURCE_FRIENDLY_NAME.get(res_type, res_type)
+        output_lines.append(f"{icon} {action.title()}: {count} {display_type}(s)")
 
     output_lines.append("\n" + "=" * 50)
 
@@ -127,7 +133,8 @@ def main():
         output_lines.append(f"Total S3 bucket and IAM role resources deployed: {len(filtered_resources)}")
         by_type = Counter([r["type"] for r in filtered_resources])
         for res_type, count in sorted(by_type.items()):
-            output_lines.append(f"• {res_type}: {count} resource(s)")
+            display_type = RESOURCE_FRIENDLY_NAME.get(res_type, res_type)
+            output_lines.append(f"• {display_type}: {count} resource(s)")
 
     config = get_config_info()
     if config:
