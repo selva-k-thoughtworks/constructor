@@ -38,6 +38,7 @@ jobs:
         id: validate_config
         run: |
           python3 validate_config.py > validate-output.txt 2>&1
+        continue_on_error: true
       
       - name: Add Summary to GitHub Step Summary
         if: github.ref == 'refs/heads/main'
@@ -45,6 +46,7 @@ jobs:
           echo '## 🚀 Config Validation Summary' >> $GITHUB_STEP_SUMMARY
           echo '' >> $GITHUB_STEP_SUMMARY
           cat validate-output.txt >> $GITHUB_STEP_SUMMARY
+          exit 1
 
       - name: Fianl version of config.yaml
         run: cat config.yaml
