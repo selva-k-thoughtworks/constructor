@@ -109,21 +109,23 @@ def main():
         return
 
     output_lines.append("\n### Resource Changes:")
-    for (action, res_type), count in sorted(changes.items()):
+    # Filter to only show aws_s3_bucket and aws_iam_role resources
+    allowed_resources = ['aws_s3_bucket', 'aws_iam_role']
+    filtered_changes = {k: v for k, v in changes.items() if k[1] in allowed_resources}
+    for (action, res_type), count in sorted(filtered_changes.items()):
         icon = "✅" if action == "create" else "🛠" if action == "update" else "🗑"
         output_lines.append(f"{icon} {action.title()}: {count} {res_type}(s)")
-
-    output_lines.append("\n### Detailed Resource Information:")
-    for res in resource_details:
-        output_lines.append(f"• {res['action'].title()}: {res['type']} '{res['name']}' (key: {res['key']})")
 
     output_lines.append("\n" + "=" * 50)
 
     current_resources = get_current_state()
     if current_resources:
+        # Filter to only show aws_s3_bucket and aws_iam_role resources
+        allowed_resources = ['aws_s3_bucket', 'aws_iam_role']
+        filtered_resources = [r for r in current_resources if r["type"] in allowed_resources]
         output_lines.append(f"\n### Current Infrastructure State:")
-        output_lines.append(f"Total resources deployed: {len(current_resources)}")
-        by_type = Counter([r["type"] for r in current_resources])
+        output_lines.append(f"Total S3 bucket and IAM role resources deployed: {len(filtered_resources)}")
+        by_type = Counter([r["type"] for r in filtered_resources])
         for res_type, count in sorted(by_type.items()):
             output_lines.append(f"• {res_type}: {count} resource(s)")
 
