@@ -56,8 +56,11 @@ jobs:
       - name: Validate Config and generate with defaults
         id: validate_config
         run: |
-          python3 validate_config.py 2>&1 | tee validate-output.txt
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          python3 validate_config.py > validate-output.txt 2>&1
+          exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          cat validate-output.txt
+          exit $exit_code
         working-directory: caller_repo
         continue-on-error: true
 
