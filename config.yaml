@@ -4,5 +4,3 @@ buckets:
   iam_role_name: writer-role-logs
   write_prefix: FOOBAR/logs/
   prefix: selva-logs
-- name: logs2
-  test: 1234
