@@ -20,7 +20,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          repository: selva-k-thoughtworks/self-infra-sample
+          repository: selva-k-thoughtworks/constructor
           ref: main
           path: caller_repo
 
