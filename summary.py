@@ -103,6 +103,13 @@ def main():
     # output_lines.append(f"🛠 Resources changed: {changed}")
     # output_lines.append(f"🗑 Resources destroyed: {destroyed}")
 
+    config = get_config_info()
+    if config:
+        output_lines.append(f"\n### Infra BOM:")
+        if config.get("buckets"):
+            output_lines.append(f"S3 Buckets configured: {len(config['buckets'])}")
+            output_lines.append(f"IAM roles configured: {len(config['buckets'])}")
+
     if not changes and not resource_details:
         output_lines.append("\n### Status: Infrastructure is up to date!")
         # Still print to console and write to summary
